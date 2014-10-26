@@ -17,7 +17,7 @@ import Web.Twitter.Types
 main :: IO ()
 
 main = do
-	let query = "cake"
+	let query = "london"
 	T.putStrLn $ T.concat [ "Streaming Tweets that match \"", query, "\"..."]
 	analyze query
 
@@ -30,10 +30,10 @@ analyze query = runTwitterFromEnv' $ do
 process :: StreamingAPI -> IO ()
 
 process (SStatus s) = do
-	let theUser = userScreenName $ statusUser s
-	let theTweet = statusText s 
-	T.putStrLn $ T.concat [theUser, ": ", theTweet]
+	printStatus s
 
 process s = return ()
 
+parseStatus (s) = T.concat ["@", (userScreenName $ statusUser s), ": ", (statusText s)]
 
+printStatus (s) = T.putStrLn $ parseStatus s
