@@ -15,25 +15,22 @@ import Data.List (isInfixOf, or)
 import Web.Twitter.Types
 
 main :: IO ()
-
 main = do
 	let query = "london"
 	T.putStrLn $ T.concat [ "Streaming Tweets that match \"", query, "\"..."]
 	analyze query
 
 analyze :: T.Text -> IO ()
-
 analyze query = runTwitterFromEnv' $ do
 	src <- stream $ statusesFilterByTrack query
 	src C.$$+- CL.mapM_ (^! act (liftIO . process))
 
 process :: StreamingAPI -> IO ()
-
-process (SStatus s) = do
-	printStatus s
-
+process (SStatus s) = printStatus s
 process s = return ()
 
+parseStatus :: Status -> T.Text
 parseStatus (s) = T.concat ["@", (userScreenName $ statusUser s), ": ", (statusText s)]
 
+printStatus :: Status -> IO ()
 printStatus (s) = T.putStrLn $ parseStatus s
